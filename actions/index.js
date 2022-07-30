@@ -1,5 +1,9 @@
-import {postData} from "../commands/index.js";
+import {postData, channelsData} from "../commands/index.js";
 import { deunionize } from 'telegraf';
+import {getChannelsButtons} from "../buttons/index.js";
+import {Markup} from "telegraf";
+import qb from "../database/qb.js";
+import {getChannelById} from "../config/channels.js";
 
 export const setBotActions = bot => {
   bot.action(
@@ -10,7 +14,13 @@ export const setBotActions = bot => {
       const { action } = postData.parse(
         deunionize(ctx.callbackQuery).data
       );
-      await ctx.reply('Creating post!');
+      await ctx.reply('Creating post!',
+        Markup.inlineKeyboard([
+          ... await getChannelsButtons()
+        ]));
+      //todo choose channels buttons
+      //send messages to compose post
+      //add
     }
   );
   bot.action(
@@ -57,4 +67,23 @@ export const setBotActions = bot => {
       await ctx.reply('Settings:');
     }
   );
+  bot.action(
+    channelsData.filter({
+      action: 'send_to'
+    }),
+    async (ctx) => {
+      const { id } = channelsData.parse(
+        deunionize(ctx.callbackQuery).data
+      );
+
+      qb.setChat(id);
+      const acceptedChannel = await getChannelById(id);
+      await ctx.replyWithHTML(`Here it is: <b>${acceptedChannel.name}</b>.\n\nSend me one or multiple messages you want to include in the post. It could be anything. A text, photo, video even a sticker.`)
+
+      bot.on('message', async ctx => {
+        ctx.reply('Ok');
+        qb.addToPost(ctx.message);
+      })
+    }
+  )
 };

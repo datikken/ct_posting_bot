@@ -2,6 +2,7 @@ import {Markup} from "telegraf";
 import {CallbackData} from '@bot-base/callback-data';
 
 export const postData = new CallbackData('post', ['action']);
+export const channelsData = new CallbackData('channels', ['action', 'id']);
 
 export const setBotCommands = bot => {
   bot.start((ctx) => ctx.replyWithHTML(`😎 Hi buddy.️`,
