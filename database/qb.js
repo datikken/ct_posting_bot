@@ -1,6 +1,15 @@
 class QueryBuilder {
+  constructor() {
+    this.chat = {}
+    this.messages = [];
+  }
+
   async setChat(chat) {
     this.chat = chat;
+  }
+
+  async addToPost(msg) {
+    this.messages.push(msg);
   }
 }
 

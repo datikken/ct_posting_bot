@@ -1,5 +1,6 @@
 import {Markup} from "telegraf";
 import {CallbackData} from '@bot-base/callback-data';
+import {kbOptions} from "../config/kb.js";
 
 export const postData = new CallbackData('post', ['action']);
 export const channelsData = new CallbackData('channels', ['action', 'id']);
@@ -30,4 +31,13 @@ export const setBotCommands = bot => {
       ]
     ])
   ));
+  kbOptions.map(optn => {
+    bot.hears(optn, async ctx => {
+      if(ctx.message.text === 'Cancel') {
+        ctx.reply('No problem', Markup.removeKeyboard(true))
+      } else {
+        ctx.reply(`Okay okay ${optn}`);
+      }
+    })
+  })
 };

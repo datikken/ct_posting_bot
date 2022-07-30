@@ -1,9 +1,10 @@
 import {postData, channelsData} from "../commands/index.js";
 import { deunionize } from 'telegraf';
-import {getChannelsButtons} from "../buttons/index.js";
+import {getChannelsButtons, suggestKeyboardOptions} from "../buttons/index.js";
 import {Markup} from "telegraf";
 import qb from "../database/qb.js";
 import {getChannelById} from "../config/channels.js";
+
 
 export const setBotActions = bot => {
   bot.action(
@@ -68,6 +69,51 @@ export const setBotActions = bot => {
     }
   );
   bot.action(
+    postData.filter({
+      action: 'delete_all'
+    }),
+    async ctx => {
+      const { action } = postData.parse(
+        deunionize(ctx.callbackQuery).data
+      );
+      await ctx.reply(`Started ${action}:`);
+    }
+  )
+  bot.action(
+    postData.filter({
+      action: 'preview'
+    }),
+    async ctx => {
+      const { action } = postData.parse(
+        deunionize(ctx.callbackQuery).data
+      );
+      await ctx.reply(`Started ${action}:`);
+    }
+  )
+  bot.action(
+    postData.filter({
+      action: 'cancel'
+    }),
+    async ctx => {
+      const { action } = postData.parse(
+        deunionize(ctx.callbackQuery).data
+      );
+      await ctx.reply(`Started ${action}:`);
+      console.log('started')
+    }
+  )
+  bot.action(
+    postData.filter({
+      action: 'send'
+    }),
+    async ctx => {
+      const { action } = postData.parse(
+        deunionize(ctx.callbackQuery).data
+      );
+      await ctx.reply(`Started ${action}:`);
+    }
+  )
+  bot.action(
     channelsData.filter({
       action: 'send_to'
     }),
@@ -76,13 +122,13 @@ export const setBotActions = bot => {
         deunionize(ctx.callbackQuery).data
       );
 
-      qb.setChat(id);
+      await qb.setChat(id);
       const acceptedChannel = await getChannelById(id);
-      await ctx.replyWithHTML(`Here it is: <b>${acceptedChannel.name}</b>.\n\nSend me one or multiple messages you want to include in the post. It could be anything. A text, photo, video even a sticker.`)
+      await suggestKeyboardOptions(ctx, `Here it is: <b>${acceptedChannel.name}</b>.\n\nSend me one or multiple messages you want to include in the post. It could be anything. A text, photo, video even a sticker.`);
 
       bot.on('message', async ctx => {
-        ctx.reply('Ok');
-        qb.addToPost(ctx.message);
+        await qb.addToPost(ctx.message);
+        await suggestKeyboardOptions(ctx, 'Accepted');
       })
     }
   )
