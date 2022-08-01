@@ -22,4 +22,4 @@ export const suggestKeyboardOptions = async (ctx, msg) => {
       columns: 4
     }),
   );
-}
+};
